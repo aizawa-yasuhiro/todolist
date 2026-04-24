@@ -38,6 +38,15 @@
       todos.forEach((todo, index) => {
         const li = document.createElement('li');
 
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = todo.done;
+        checkbox.addEventListener('change', () => {
+          todos[index].done = checkbox.checked;
+          saveTodos(todos);
+          renderTodos();
+        });
+
         const span = document.createElement('span');
         span.textContent = todo.text;
         if (todo.done) {
@@ -53,6 +62,7 @@
           renderTodos();
         });
 
+        li.appendChild(checkbox);
         li.appendChild(span);
         li.appendChild(delBtn);
         todoListEl.appendChild(li);

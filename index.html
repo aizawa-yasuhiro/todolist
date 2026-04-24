@@ -1,71 +1,84 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Todo List</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo List</title>
 </head>
+
 <body>
 
   <h1>Todo List</h1>
-<div class="input-area">
-  <input type="text" id="todo-input" placeholder="やることを入力" />
-  <button id="add-btn">追加</button>
-</div>
+  <div class="input-area">
+    <input type="text" id="todo-input" placeholder="やることを入力" />
+    <button id="add-btn">追加</button>
+  </div>
 
-<ul id="todo-list"></ul>
+  <ul id="todo-list"></ul>
 
-<script>
-  function loadTodos() {
-    const stored = localStorage.getItem('todos');
-    return stored ? JSON.parse(stored) : [];
-  }
+  <script>
+    function loadTodos() {
+      const stored = localStorage.getItem('todos');
+      return stored ? JSON.parse(stored) : [];
+    }
 
-  function saveTodos(todos) {
-    localStorage.setItem('todos', JSON.stringify(todos));
-  }
+    function saveTodos(todos) {
+      localStorage.setItem('todos', JSON.stringify(todos));
+    }
 
-  const inputEl = document.getElementById('todo-input');
-  const addBtn = document.getElementById('add-btn');
-  const todoListEl = document.getElementById('todo-list');
+    const inputEl = document.getElementById('todo-input');
+    const addBtn = document.getElementById('add-btn');
+    const todoListEl = document.getElementById('todo-list');
 
-  let todos = loadTodos();
+    let todos = loadTodos();
 
-  function renderTodos() {
-    todoListEl.innerHTML = '';
-    todos.forEach((todo, index) => {
-      const li = document.createElement('li');
+    function renderTodos() {
+      todoListEl.innerHTML = '';
+      todos.forEach((todo, index) => {
+        const li = document.createElement('li');
 
-      const span = document.createElement('span');
-      span.textContent = todo.text;
-      if (todo.done) {
-        span.classList.add('done-text');
+        const span = document.createElement('span');
+        span.textContent = todo.text;
+        if (todo.done) {
+          span.classList.add('done-text');
+        }
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '削除';
+        delBtn.classList.add('delete-btn');
+        delBtn.addEventListener('click', () => {
+          todos.splice(index, 1);
+          saveTodos(todos);
+          renderTodos();
+        });
+
+        li.appendChild(span);
+        li.appendChild(delBtn);
+        todoListEl.appendChild(li);
+      });
+    }
+
+    function addTodo() {
+      const text = inputEl.value.trim();
+      if (text) {
+        todos.push({ text: text, done: false });
+        saveTodos(todos);
+        renderTodos();
+        inputEl.value = '';
       }
+    }
 
-      li.appendChild(span);
-      todoListEl.appendChild(li);
+    addBtn.addEventListener('click', addTodo);
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        addTodo();
+      }
     });
-  }
 
-  function addTodo() {
-    const text = inputEl.value.trim();
-    if (text) {
-      todos.push({ text: text, done: false });
-      saveTodos(todos);
-      renderTodos();
-      inputEl.value = '';
-    }
-  }
-
-  addBtn.addEventListener('click', addTodo);
-  inputEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      addTodo();
-    }
-  });
-
-  renderTodos();
-</script>
+    renderTodos();
+  </script>
 
 </body>
+
 </html>
